@@ -1622,9 +1622,9 @@
             }
 
             update() {
-                // Skip most updates if game is over, but keep the particles running
+                // Если игра окончена, выходим из обновления
                 if (this.gameOver) {
-                    this.particles.update();
+                    console.log("Игра окончена, пропускаем обновление");
                     return;
                 }
 
@@ -1860,7 +1860,125 @@
                             );
                         }
                     } else {
-                        this.gameOver();
+                        // Игра окончена! Полностью останавливаем игру и показываем экран окончания игры
+                        console.log("Игрок упал! Игра окончена!");
+                        
+                        // Устанавливаем флаг окончания игры
+                        this.gameOver = true;
+                        
+                        // Обновляем рекорд, если нужно
+                        if (this.score > this.highScore) {
+                            this.highScore = this.score;
+                            localStorage.setItem('doodleJumpHighScore', this.highScore);
+                        }
+                        
+                        // Принудительно останавливаем все обновления игры
+                        if (this.animationFrameId) {
+                            cancelAnimationFrame(this.animationFrameId);
+                            this.animationFrameId = null;
+                        }
+                        
+                        // Создаем темный фон поверх игры
+                        const gameOverDiv = document.createElement('div');
+                        gameOverDiv.style.position = 'absolute';
+                        gameOverDiv.style.top = '0';
+                        gameOverDiv.style.left = '0';
+                        gameOverDiv.style.width = '100%';
+                        gameOverDiv.style.height = '100%';
+                        gameOverDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                        gameOverDiv.style.zIndex = '1000';
+                        gameOverDiv.style.display = 'flex';
+                        gameOverDiv.style.flexDirection = 'column';
+                        gameOverDiv.style.justifyContent = 'center';
+                        gameOverDiv.style.alignItems = 'center';
+                        gameOverDiv.style.color = 'white';
+                        gameOverDiv.style.fontFamily = 'Arial, sans-serif';
+                        
+                        // Добавляем заголовок
+                        const gameOverTitle = document.createElement('h1');
+                        gameOverTitle.textContent = 'Игра окончена!';
+                        gameOverTitle.style.fontSize = '32px';
+                        gameOverTitle.style.marginBottom = '20px';
+                        gameOverTitle.style.color = '#FF5252';
+                        
+                        // Добавляем информацию о счете
+                        const scoreInfo = document.createElement('p');
+                        scoreInfo.textContent = `Счет: ${this.score}`;
+                        scoreInfo.style.fontSize = '24px';
+                        scoreInfo.style.marginBottom = '10px';
+                        
+                        // Добавляем информацию о монетах
+                        const coinsInfo = document.createElement('p');
+                        coinsInfo.textContent = `Монеты: ${this.coins}`;
+                        coinsInfo.style.fontSize = '24px';
+                        coinsInfo.style.marginBottom = '30px';
+                        
+                        // Контейнер для кнопок
+                        const buttonsContainer = document.createElement('div');
+                        buttonsContainer.style.display = 'flex';
+                        buttonsContainer.style.flexDirection = 'column';
+                        buttonsContainer.style.gap = '15px';
+                        
+                        // Кнопка перезапуска
+                        const restartButton = document.createElement('button');
+                        restartButton.textContent = 'Играть еще раз';
+                        restartButton.style.padding = '15px 40px';
+                        restartButton.style.fontSize = '20px';
+                        restartButton.style.backgroundColor = '#4CAF50';
+                        restartButton.style.color = 'white';
+                        restartButton.style.border = 'none';
+                        restartButton.style.borderRadius = '25px';
+                        restartButton.style.cursor = 'pointer';
+                        restartButton.style.marginBottom = '10px';
+                        
+                        // Кнопка магазина
+                        const shopButton = document.createElement('button');
+                        shopButton.textContent = 'Магазин';
+                        shopButton.style.padding = '15px 40px';
+                        shopButton.style.fontSize = '20px';
+                        shopButton.style.backgroundColor = '#9C27B0';
+                        shopButton.style.color = 'white';
+                        shopButton.style.border = 'none';
+                        shopButton.style.borderRadius = '25px';
+                        shopButton.style.cursor = 'pointer';
+                        
+                        // Обработчик для кнопки перезапуска
+                        restartButton.onclick = () => {
+                            console.log("Нажата кнопка перезапуска");
+                            
+                            // Удаляем экран окончания игры
+                            if (gameOverDiv.parentNode) {
+                                gameOverDiv.parentNode.removeChild(gameOverDiv);
+                            }
+                            
+                            // Перезапускаем игру
+                            location.reload();
+                        };
+                        
+                        // Обработчик для кнопки магазина
+                        shopButton.onclick = () => {
+                            console.log("Нажата кнопка магазина");
+                            
+                            // Показываем магазин
+                            this.showShop();
+                            
+                            // Скрываем экран окончания игры
+                            gameOverDiv.style.display = 'none';
+                        };
+                        
+                        // Собираем все вместе
+                        buttonsContainer.appendChild(restartButton);
+                        buttonsContainer.appendChild(shopButton);
+                        gameOverDiv.appendChild(gameOverTitle);
+                        gameOverDiv.appendChild(scoreInfo);
+                        gameOverDiv.appendChild(coinsInfo);
+                        gameOverDiv.appendChild(buttonsContainer);
+                        
+                        // Добавляем экран окончания игры в DOM
+                        const gameContainer = document.getElementById('gameContainer');
+                        gameContainer.appendChild(gameOverDiv);
+                        
+                        console.log("Экран окончания игры добавлен в DOM");
                     }
                 }
                 
@@ -2441,9 +2559,9 @@
             
             // Reset the game state
             resetGame() {
-                console.log("Resetting game..."); // Debug log
+                console.log("Сброс игры..."); // Debug log
                 
-                // Cancel any existing animation frame
+                // Отменяем все анимационные фреймы
                 if (this.animationFrameId) {
                     cancelAnimationFrame(this.animationFrameId);
                     this.animationFrameId = null;
@@ -2456,13 +2574,24 @@
                 this.difficulty = 1;
                 this.cameraY = 0;
                 
-                // Hide game over screen
+                // Удаляем все динамически созданные экраны окончания игры
+                const gameContainer = document.getElementById('gameContainer');
+                if (gameContainer) {
+                    // Находим все дочерние элементы с абсолютным позиционированием и z-index >= 1000
+                    const possibleGameOverScreens = gameContainer.querySelectorAll('div[style*="position: absolute"][style*="z-index: 1000"]');
+                    possibleGameOverScreens.forEach(screen => {
+                        console.log("Удаляем возможный экран окончания игры");
+                        gameContainer.removeChild(screen);
+                    });
+                }
+                
+                // Скрываем стандартный экран окончания игры
                 const gameOverScreen = document.getElementById('gameOverScreen');
                 if (gameOverScreen) {
                     gameOverScreen.style.display = 'none';
                 }
                 
-                // Show touch zones when game is reset (only on mobile)
+                // Показываем сенсорные зоны при сбросе игры (только на мобильных)
                 const leftTouch = document.getElementById('leftTouch');
                 const rightTouch = document.getElementById('rightTouch');
                 if (leftTouch && this.isMobile) leftTouch.style.display = 'block';
@@ -2721,12 +2850,20 @@
 
             // Game loop method
             gameLoop() {
+                // Если игра окончена, просто выход
+                if (this.gameOver) {
+                    console.log("Игра окончена, выход из игрового цикла");
+                    return;
+                }
+                
                 this.update();
                 this.draw();
                 
-                // Store the animation frame ID for potential cancellation
+                // Запрашиваем следующий кадр анимации только если игра не окончена
                 if (!this.gameOver) {
                     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+                } else {
+                    console.log("Игра окончена во время игрового цикла");
                 }
             }
 
@@ -2954,17 +3091,19 @@
             // Game loop
             function gameLoop() {
                 if (game) {
+                    // Если игра окончена, прекращаем цикл
+                    if (game.gameOver) {
+                        console.log("Игра окончена в глобальном цикле");
+                        return;
+                    }
+                    
                     game.update();
                     game.draw();
                     
-                    // Explicitly check game over state here too
-                    if (game.gameOver) {
-                        restartBtn.style.display = 'block';
-                        shopBtnInGame.style.display = 'block';
+                    // Запрашиваем следующий кадр только если игра не окончена
+                    if (!game.gameOver) {
+                        requestAnimationFrame(gameLoop);
                     }
-                    
-                    // Always continue the external loop
-                    requestAnimationFrame(gameLoop);
                 }
             }
             
