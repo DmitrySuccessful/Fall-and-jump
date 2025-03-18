@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doodle Jump Clone</title>
+    <title>Fall-and-Jump</title>
     <style>
         body {
             margin: 0;
@@ -12,15 +12,21 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #333;
+            overflow: hidden;
+        }
+        #game-container {
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.7);
         }
     </style>
-    <script>
-        // Redirect to the actual game page
-        window.location.href = "src/game.html";
-    </script>
+    <!-- Phaser CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
 </head>
 <body>
-    <p>If you are not redirected automatically, <a href="src/game.html">click here to play the Doodle Jump Clone</a>.</p>
+    <div id="game-container"></div>
+    
+    <!-- Game scripts -->
+    <script src="js/scenes/MainScene.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

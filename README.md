@@ -1,44 +1,51 @@
-# JumperBox
+# Fall-and-Jump
 
-JumperBox is a fun, arcade-style platformer game inspired by the classic Doodle Jump. The game features a jumping character that must climb as high as possible by jumping on platforms.
+A fun tower-jumping game inspired by Helix Jump, built with Phaser 3.
+
+## Game Overview
+
+In Fall-and-Jump, you control a tower by rotating it with your mouse/touch to help a bouncing ball navigate through platforms. The goal is to pass through as many platforms as possible without falling out of bounds.
 
 ## Features
 
 - Simple and addictive gameplay
-- Multiple character skins with unique abilities
-- In-game shop to purchase new skins
-- Collectible coins
-- Power-ups (springs, magnets, etc.)
-- Mobile and desktop support
+- Three unique game locations/themes:
+  - Classic
+  - Watermelon
+  - Neon
+- Physics-based ball movement with realistic bouncing
+- Particle trail effects for the ball
+- Platform animation effects
+- Score tracking
+- Game over screen with restart option
 
 ## How to Play
 
-### Desktop Controls
-- Use the left and right arrow keys (or A/D) to move
-- Press Space to activate special abilities (for certain skins)
+1. Control the tower rotation by moving your mouse/finger horizontally
+2. Guide the ball to fall through gaps in the platforms
+3. Each platform passed increases your score
+4. Change theme by tapping/clicking the screen
+5. Restart the game by tapping/clicking when game over
 
-### Mobile Controls
-- Tap the left or right side of the screen to move
-- Double tap to activate special abilities (for certain skins)
+## Setup and Run
 
-## Character Skins
+The game uses Phaser 3 via CDN, so no installation is required. Simply:
 
-- **Default**: Basic character with no special abilities
-- **Hat**: Protects from one fall
-- **Glasses**: Allows for super jumps (activated by double tap/click)
-- **Clothes**: Cosmetic skin with no special abilities
-- **Gold Cube**: Increases chance of double coins
-- **Fire Cube**: Leaves a fire trail when jumping
+1. Clone this repository
+2. Open `index.html` in a modern web browser
+3. Alternatively, host it on any static web server
 
-## Running the Game
+## Technologies Used
 
-1. Clone the repository
-2. Start a local web server in the project directory
-   ```
-   python -m http.server 8080
-   ```
-3. Open a browser and navigate to `http://localhost:8080`
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Phaser 3 Game Framework
 
 ## Credits
 
-Created by Dmitry Successful 
+All game assets are externally hosted and used for educational purposes.
+
+## License
+
+This project is open source and available under the MIT License. 
