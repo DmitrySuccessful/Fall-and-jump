@@ -501,6 +501,42 @@
             left: 50%;
             transform: translate(-50%, 0);
         }
+
+        /* Game Over Screen */
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 600;
+            color: white;
+            text-align: center;
+        }
+        
+        #gameOverTitle {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #FF5252;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        #finalScore, #finalCoins {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .game-over-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
     </style>
 </head>
 <body>
@@ -516,6 +552,16 @@
                 <button id="shopBtnInGame" class="game-button">Магазин</button>
             </div>
             <div id="coinCounter">0</div>
+        </div>
+        <!-- Add dedicated game over screen -->
+        <div id="gameOverScreen" style="display: none;">
+            <h2 id="gameOverTitle">Игра окончена!</h2>
+            <div id="finalScore">Счет: 0</div>
+            <div id="finalCoins">Монеты: 0</div>
+            <div class="game-over-buttons">
+                <button id="restartButton" class="game-button">Играть еще раз</button>
+                <button id="shopButton" class="game-button">Магазин</button>
+            </div>
         </div>
         <div id="leftTouch" class="touch-zone"></div>
         <div id="rightTouch" class="touch-zone"></div>
@@ -1573,7 +1619,11 @@
             }
 
             update() {
-                if (this.gameOver) return;
+                // Skip most updates if game is over, but keep the particles running
+                if (this.gameOver) {
+                    this.particles.update();
+                    return;
+                }
 
                 const canvasWidth = this.canvas.width;
                 const canvasHeight = this.canvas.height;
@@ -1871,21 +1921,8 @@
                 this.ctx.fillText(`Счёт: ${this.score}`, 10, 30);
                 this.ctx.fillText(`Рекорд: ${this.highScore}`, 10, 60);
 
-                // Draw game over screen
-                if (this.gameOver) {
-                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                    this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                    this.ctx.fillStyle = '#fff';
-                    this.ctx.font = '40px Arial';
-                    this.ctx.fillText('Игра окончена!', canvasWidth/2 - 120, canvasHeight/2 - 40);
-                    this.ctx.font = '20px Arial';
-                    this.ctx.fillText(`Итоговый счёт: ${this.score}`, canvasWidth/2 - 80, canvasHeight/2);
-                    this.ctx.fillText(`Монеты: ${this.coins}`, canvasWidth/2 - 50, canvasHeight/2 + 30);
-                    
-                    // Show restart and shop buttons
-                    document.getElementById('restartBtn').style.display = 'block';
-                    document.getElementById('shopBtnInGame').style.display = 'block';
-                }
+                // We're no longer drawing game over screen in canvas
+                // as we have a dedicated HTML overlay for it
             }
             
             hideInstructions() {
@@ -2646,18 +2683,12 @@
                 this.update();
                 this.draw();
                 
-                // Always check game over state and show buttons
-                if (this.gameOver) {
-                    // Explicitly show buttons by directly manipulating DOM
-                    document.getElementById('restartBtn').style.display = 'block';
-                    document.getElementById('shopBtnInGame').style.display = 'block';
-                } else {
-                    // Continue the game loop only if not game over
-                    requestAnimationFrame(() => this.gameLoop());
-                }
+                // Always continue the game loop, even if game over
+                requestAnimationFrame(() => this.gameLoop());
             }
 
             gameOver() {
+                console.log("Game over triggered"); // Debug log
                 this.gameOver = true;
                 
                 if (this.score > this.highScore) {
@@ -2671,22 +2702,57 @@
                 if (leftTouch) leftTouch.style.display = 'none';
                 if (rightTouch) rightTouch.style.display = 'none';
                 
-                // Immediately redraw to show game over state
-                this.draw();
-                
-                // Force UI to show - set direct DOM manipulation
-                document.getElementById('restartBtn').style.display = 'block';
-                document.getElementById('shopBtnInGame').style.display = 'block';
-                
-                // Timeout to ensure buttons are visible after any potential transitions
-                setTimeout(() => {
-                    document.getElementById('restartBtn').style.display = 'block';
-                    document.getElementById('shopBtnInGame').style.display = 'block';
-                }, 100);
+                // Update and show the game over screen
+                const gameOverScreen = document.getElementById('gameOverScreen');
+                if (gameOverScreen) {
+                    // Update score and coins
+                    document.getElementById('finalScore').textContent = `Счет: ${this.score}`;
+                    document.getElementById('finalCoins').textContent = `Монеты: ${this.coins}`;
+                    
+                    // Show the game over screen with flex display
+                    gameOverScreen.style.display = 'flex';
+                    
+                    // Set up event listeners for buttons
+                    const restartButton = document.getElementById('restartButton');
+                    if (restartButton) {
+                        // Clear existing event listeners
+                        const newButton = restartButton.cloneNode(true);
+                        restartButton.parentNode.replaceChild(newButton, restartButton);
+                        
+                        // Add new event listener
+                        newButton.addEventListener('click', () => {
+                            console.log("Restart button clicked"); // Debug log
+                            this.resetGame();
+                            this.startGame();
+                            gameOverScreen.style.display = 'none';
+                        });
+                    } else {
+                        console.error("Restart button not found!"); // Debug log
+                    }
+                    
+                    const shopButton = document.getElementById('shopButton');
+                    if (shopButton) {
+                        // Clear existing event listeners
+                        const newButton = shopButton.cloneNode(true);
+                        shopButton.parentNode.replaceChild(newButton, shopButton);
+                        
+                        // Add new event listener
+                        newButton.addEventListener('click', () => {
+                            console.log("Shop button clicked"); // Debug log
+                            this.showShop();
+                            gameOverScreen.style.display = 'none';
+                        });
+                    } else {
+                        console.error("Shop button not found!"); // Debug log
+                    }
+                } else {
+                    console.error("Game over screen element not found!"); // Debug log
+                }
             }
             
             // Reset the game state
             resetGame() {
+                console.log("Resetting game..."); // Debug log
                 this.gameOver = false;
                 this.score = 0;
                 this.platforms = [];
@@ -2694,7 +2760,13 @@
                 this.difficulty = 1;
                 this.cameraY = 0;
                 
-                // Show touch zones when game is reset
+                // Hide game over screen
+                const gameOverScreen = document.getElementById('gameOverScreen');
+                if (gameOverScreen) {
+                    gameOverScreen.style.display = 'none';
+                }
+                
+                // Show touch zones when game is reset (only on mobile)
                 const leftTouch = document.getElementById('leftTouch');
                 const rightTouch = document.getElementById('rightTouch');
                 if (leftTouch && this.isMobile) leftTouch.style.display = 'block';
