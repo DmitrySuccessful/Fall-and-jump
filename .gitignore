@@ -8,16 +8,24 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
-# Node.js
-node_modules/
-npm-debug.log
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Build directories
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build output
 dist/
 build/
 out/
 
-# Other
+# Local env files
 .env
 .env.local
-*.log 
+.env.development.local
+.env.test.local
+.env.production.local 

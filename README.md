@@ -1,51 +1,52 @@
-# Fall-and-Jump
+# Bubble Pop
 
-A fun tower-jumping game inspired by Helix Jump, built with Phaser 3.
+A fun HTML5 Canvas arcade game where players need to pop colorful bubbles before they float away!
 
-## Game Overview
+## Game Description
 
-In Fall-and-Jump, you control a tower by rotating it with your mouse/touch to help a bouncing ball navigate through platforms. The goal is to pass through as many platforms as possible without falling out of bounds.
+Bubble Pop is a simple yet addictive game where colorful bubbles float up from the bottom of the screen. Your goal is to pop as many bubbles as possible by clicking on them. Each popped bubble adds to your score, with larger bubbles worth more points. But be careful - if a bubble floats off the top of the screen or if you miss when clicking, you'll lose a life! The game gets progressively harder as bubbles start moving faster and appearing more frequently.
 
 ## Features
 
-- Simple and addictive gameplay
-- Three unique game locations/themes:
-  - Classic
-  - Watermelon
-  - Neon
-- Physics-based ball movement with realistic bouncing
-- Particle trail effects for the ball
-- Platform animation effects
-- Score tracking
-- Game over screen with restart option
+- Beautiful, colorful bubble animations
+- Responsive design that works on both desktop and mobile
+- Progressive difficulty: game gets harder the longer you play
+- Score system based on bubble size
+- Lives system with penalties for misses and missed bubbles
+- Attractive UI with game over screen and restart functionality
 
 ## How to Play
 
-1. Control the tower rotation by moving your mouse/finger horizontally
-2. Guide the ball to fall through gaps in the platforms
-3. Each platform passed increases your score
-4. Change theme by tapping/clicking the screen
-5. Restart the game by tapping/clicking when game over
+1. Open the game in your browser
+2. Click the "Start Game" button
+3. Click/tap on bubbles to pop them
+4. Try to get the highest score possible before running out of lives
+5. When game over, click "Play Again" to restart
 
-## Setup and Run
+## Technical Details
 
-The game uses Phaser 3 via CDN, so no installation is required. Simply:
+- Built with pure HTML5, CSS3, and JavaScript
+- Uses the Canvas API for rendering
+- No external dependencies or libraries
+- Object-oriented design with bubble classes
+- Responsive layout that adjusts to different screen sizes
+
+## Development
+
+To run the game locally:
 
 1. Clone this repository
-2. Open `index.html` in a modern web browser
-3. Alternatively, host it on any static web server
+2. Open `index.html` in a web browser
+3. No build process or server required!
 
-## Technologies Used
+## Future Enhancements
 
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- Phaser 3 Game Framework
-
-## Credits
-
-All game assets are externally hosted and used for educational purposes.
+- Power-ups for special abilities
+- Different bubble types with unique properties
+- Sound effects and background music
+- Local storage for saving high scores
+- Levels with distinct challenges
 
 ## License
 
-This project is open source and available under the MIT License.
+This project is open source and available under the MIT License. 

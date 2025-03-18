@@ -3,30 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fall-and-Jump</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #333;
-            overflow: hidden;
-        }
-        #game-container {
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.7);
-        }
-    </style>
-    <!-- Phaser CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Bubble Pop - Arcade Game</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div id="game-container"></div>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="ui-overlay">
+            <div class="score-container">Score: <span id="score">0</span></div>
+            <div class="lives-container">Lives: <span id="lives">3</span></div>
+            <button id="startButton" class="start-button">Start Game</button>
+        </div>
+    </div>
     
-    <!-- Game scripts -->
-    <script src="js/scenes/MainScene.js"></script>
-    <script src="js/main.js"></script>
+    <div class="game-over" id="gameOverScreen">
+        <h2>Game Over</h2>
+        <p>Your Score: <span id="finalScore">0</span></p>
+        <button id="restartButton">Play Again</button>
+    </div>
+
+    <script src="js/game.js"></script>
 </body>
-</html>
+</html> 
