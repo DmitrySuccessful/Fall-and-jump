@@ -21,20 +21,20 @@ class MainScene extends Phaser.Scene {
 
     preload() {
         // Load ball image
-        this.load.image('ball', 'https://i.imgur.com/J6qF96Z.png');
+        this.load.svg('ball', 'assets/images/ball.svg');
         
         // Load backgrounds for different locations
-        this.load.image('bg1', 'https://i.imgur.com/ZF4NKnR.png');
-        this.load.image('bg2', 'https://i.imgur.com/R2t9XJm.png');
-        this.load.image('bg3', 'https://i.imgur.com/ACD2lXQ.png');
+        this.load.svg('bg1', 'assets/images/bg1.svg');
+        this.load.svg('bg2', 'assets/images/bg2.svg');
+        this.load.svg('bg3', 'assets/images/bg3.svg');
         
         // Load tower images for different locations
-        this.load.image('tower1', 'https://i.imgur.com/h2OtnwI.png');
-        this.load.image('tower2', 'https://i.imgur.com/FK8OanL.png');
-        this.load.image('tower3', 'https://i.imgur.com/YD3oVOR.png');
+        this.load.svg('tower1', 'assets/images/tower1.svg');
+        this.load.svg('tower2', 'assets/images/tower2.svg');
+        this.load.svg('tower3', 'assets/images/tower3.svg');
         
         // Load platform image
-        this.load.image('platform', 'https://i.imgur.com/YWYzQTu.png');
+        this.load.svg('platform', 'assets/images/platform.svg');
     }
 
     create() {
