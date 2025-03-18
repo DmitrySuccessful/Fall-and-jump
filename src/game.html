@@ -1566,6 +1566,9 @@
                     'gold': 30,
                     'fire': 50
                 };
+                
+                // Initialize animation frame ID for managing game loop
+                this.animationFrameId = null;
             }
 
             init() {
@@ -2436,10 +2439,48 @@
                 }
             }
             
+            // Reset the game state
+            resetGame() {
+                console.log("Resetting game..."); // Debug log
+                
+                // Cancel any existing animation frame
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                
+                this.gameOver = false;
+                this.score = 0;
+                this.platforms = [];
+                this.player = null;
+                this.difficulty = 1;
+                this.cameraY = 0;
+                
+                // Hide game over screen
+                const gameOverScreen = document.getElementById('gameOverScreen');
+                if (gameOverScreen) {
+                    gameOverScreen.style.display = 'none';
+                }
+                
+                // Show touch zones when game is reset (only on mobile)
+                const leftTouch = document.getElementById('leftTouch');
+                const rightTouch = document.getElementById('rightTouch');
+                if (leftTouch && this.isMobile) leftTouch.style.display = 'block';
+                if (rightTouch && this.isMobile) rightTouch.style.display = 'block';
+                
+                this.init();
+            }
+            
             // Start the game
             startGame() {
                 // Clear any existing notifications
                 this.clearNotifications();
+                
+                // Clear any existing animation frame
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
                 
                 this.gameStarted = true;
                 this.gameOver = false;
@@ -2683,13 +2724,28 @@
                 this.update();
                 this.draw();
                 
-                // Always continue the game loop, even if game over
-                requestAnimationFrame(() => this.gameLoop());
+                // Store the animation frame ID for potential cancellation
+                if (!this.gameOver) {
+                    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+                }
             }
 
             gameOver() {
                 console.log("Game over triggered"); // Debug log
+                
+                // Only proceed if not already in game over state
+                if (this.gameOver) {
+                    console.log("Already in game over state");
+                    return;
+                }
+                
                 this.gameOver = true;
+                
+                // Cancel the animation frame to stop the game loop
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    console.log("Animation frame cancelled");
+                }
                 
                 if (this.score > this.highScore) {
                     this.highScore = this.score;
@@ -2705,12 +2761,21 @@
                 // Update and show the game over screen
                 const gameOverScreen = document.getElementById('gameOverScreen');
                 if (gameOverScreen) {
+                    console.log("Found game over screen, updating it");
+                    
                     // Update score and coins
                     document.getElementById('finalScore').textContent = `Счет: ${this.score}`;
                     document.getElementById('finalCoins').textContent = `Монеты: ${this.coins}`;
                     
                     // Show the game over screen with flex display
                     gameOverScreen.style.display = 'flex';
+                    console.log("Set game over screen display to flex");
+                    
+                    // Force visibility after a timeout as well
+                    setTimeout(() => {
+                        console.log("Forcing game over screen visibility in timeout");
+                        gameOverScreen.style.display = 'flex';
+                    }, 100);
                     
                     // Set up event listeners for buttons
                     const restartButton = document.getElementById('restartButton');
@@ -2747,32 +2812,95 @@
                     }
                 } else {
                     console.error("Game over screen element not found!"); // Debug log
+                    
+                    // Fallback: try direct DOM creation
+                    this.createGameOverScreen();
                 }
             }
             
-            // Reset the game state
-            resetGame() {
-                console.log("Resetting game..."); // Debug log
-                this.gameOver = false;
-                this.score = 0;
-                this.platforms = [];
-                this.player = null;
-                this.difficulty = 1;
-                this.cameraY = 0;
-                
-                // Hide game over screen
-                const gameOverScreen = document.getElementById('gameOverScreen');
-                if (gameOverScreen) {
-                    gameOverScreen.style.display = 'none';
+            // Fallback method to create game over screen if it doesn't exist
+            createGameOverScreen() {
+                console.log("Creating fallback game over screen");
+                const gameContainer = document.getElementById('gameContainer');
+                if (!gameContainer) {
+                    console.error("Game container not found!");
+                    return;
                 }
                 
-                // Show touch zones when game is reset (only on mobile)
-                const leftTouch = document.getElementById('leftTouch');
-                const rightTouch = document.getElementById('rightTouch');
-                if (leftTouch && this.isMobile) leftTouch.style.display = 'block';
-                if (rightTouch && this.isMobile) rightTouch.style.display = 'block';
+                // Create game over screen
+                const gameOverScreen = document.createElement('div');
+                gameOverScreen.id = 'gameOverScreen';
+                gameOverScreen.style.position = 'absolute';
+                gameOverScreen.style.top = '0';
+                gameOverScreen.style.left = '0';
+                gameOverScreen.style.width = '100%';
+                gameOverScreen.style.height = '100%';
+                gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                gameOverScreen.style.display = 'flex';
+                gameOverScreen.style.flexDirection = 'column';
+                gameOverScreen.style.justifyContent = 'center';
+                gameOverScreen.style.alignItems = 'center';
+                gameOverScreen.style.zIndex = '999';
+                gameOverScreen.style.color = 'white';
                 
-                this.init();
+                // Add title
+                const title = document.createElement('h2');
+                title.textContent = 'Игра окончена!';
+                title.style.fontSize = '36px';
+                title.style.marginBottom = '20px';
+                title.style.color = '#FF5252';
+                
+                // Add score
+                const scoreText = document.createElement('div');
+                scoreText.textContent = `Счет: ${this.score}`;
+                scoreText.style.fontSize = '24px';
+                scoreText.style.marginBottom = '10px';
+                
+                // Add coins
+                const coinsText = document.createElement('div');
+                coinsText.textContent = `Монеты: ${this.coins}`;
+                coinsText.style.fontSize = '24px';
+                coinsText.style.marginBottom = '20px';
+                
+                // Add buttons container
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.style.display = 'flex';
+                buttonsContainer.style.flexDirection = 'column';
+                buttonsContainer.style.gap = '15px';
+                
+                // Add restart button
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Играть еще раз';
+                restartButton.className = 'game-button';
+                restartButton.onclick = () => {
+                    console.log("Restart button clicked from fallback");
+                    this.resetGame();
+                    this.startGame();
+                    gameOverScreen.style.display = 'none';
+                };
+                
+                // Add shop button
+                const shopButton = document.createElement('button');
+                shopButton.textContent = 'Магазин';
+                shopButton.className = 'game-button';
+                shopButton.onclick = () => {
+                    console.log("Shop button clicked from fallback");
+                    this.showShop();
+                    gameOverScreen.style.display = 'none';
+                };
+                
+                // Assemble the screen
+                buttonsContainer.appendChild(restartButton);
+                buttonsContainer.appendChild(shopButton);
+                gameOverScreen.appendChild(title);
+                gameOverScreen.appendChild(scoreText);
+                gameOverScreen.appendChild(coinsText);
+                gameOverScreen.appendChild(buttonsContainer);
+                
+                // Add to the container
+                gameContainer.appendChild(gameOverScreen);
+                
+                console.log("Fallback game over screen created and added to DOM");
             }
         }
 
