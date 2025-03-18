@@ -1569,6 +1569,9 @@
                 
                 // Initialize animation frame ID for managing game loop
                 this.animationFrameId = null;
+                
+                // Для отслеживания экрана конца игры
+                this.currentGameOverScreen = null;
             }
 
             init() {
@@ -1951,19 +1954,23 @@
                                 gameOverDiv.parentNode.removeChild(gameOverDiv);
                             }
                             
-                            // Перезапускаем игру
-                            location.reload();
+                            // Перезапускаем игру напрямую вместо перезагрузки страницы
+                            this.resetGame();
+                            this.startGame();
                         };
                         
                         // Обработчик для кнопки магазина
                         shopButton.onclick = () => {
                             console.log("Нажата кнопка магазина");
                             
+                            // Сохраняем ссылку на экран окончания игры в глобальном свойстве
+                            this.currentGameOverScreen = gameOverDiv;
+                            
+                            // Временно скрываем экран окончания игры
+                            gameOverDiv.style.display = 'none';
+                            
                             // Показываем магазин
                             this.showShop();
-                            
-                            // Скрываем экран окончания игры
-                            gameOverDiv.style.display = 'none';
                         };
                         
                         // Собираем все вместе
@@ -2591,6 +2598,9 @@
                     gameOverScreen.style.display = 'none';
                 }
                 
+                // Сбрасываем ссылку на экран окончания игры
+                this.currentGameOverScreen = null;
+                
                 // Показываем сенсорные зоны при сбросе игры (только на мобильных)
                 const leftTouch = document.getElementById('leftTouch');
                 const rightTouch = document.getElementById('rightTouch');
@@ -2610,6 +2620,9 @@
                     cancelAnimationFrame(this.animationFrameId);
                     this.animationFrameId = null;
                 }
+                
+                // Сбрасываем ссылку на экран окончания игры
+                this.currentGameOverScreen = null;
                 
                 this.gameStarted = true;
                 this.gameOver = false;
@@ -2728,6 +2741,12 @@
                     shopModal.style.display = 'none';
                 } else {
                     console.error('Shop modal element not found!');
+                }
+                
+                // Восстанавливаем экран окончания игры, если он был временно скрыт
+                if (this.gameOver && this.currentGameOverScreen) {
+                    console.log("Восстанавливаем экран окончания игры после закрытия магазина");
+                    this.currentGameOverScreen.style.display = 'flex';
                 }
             }
 
