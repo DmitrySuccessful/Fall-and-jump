@@ -141,7 +141,11 @@
         /* Restart Button */
         #restartBtn {
             display: none;
-            z-index: 300;
+            z-index: 500; /* Ensure it appears above everything */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 100px);
         }
 
         /* Coin counter */
@@ -487,6 +491,16 @@
         .shop-button-ingame:hover {
             background: #7B1FA2;
         }
+
+        /* Shop Button In Game */
+        #shopBtnInGame {
+            display: none;
+            z-index: 500; /* Ensure it appears above everything */
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
     </style>
 </head>
 <body>
@@ -499,7 +513,7 @@
         <div id="gameUI" style="display: none;">
             <div id="controlButtons">
                 <button id="restartBtn" class="game-button">Перезапуск</button>
-                <button id="shopBtnInGame" class="game-button shop-button-ingame">Магазин</button>
+                <button id="shopBtnInGame" class="game-button">Магазин</button>
             </div>
             <div id="coinCounter">0</div>
         </div>
@@ -1867,6 +1881,10 @@
                     this.ctx.font = '20px Arial';
                     this.ctx.fillText(`Итоговый счёт: ${this.score}`, canvasWidth/2 - 80, canvasHeight/2);
                     this.ctx.fillText(`Монеты: ${this.coins}`, canvasWidth/2 - 50, canvasHeight/2 + 30);
+                    
+                    // Show restart and shop buttons
+                    document.getElementById('restartBtn').style.display = 'block';
+                    document.getElementById('shopBtnInGame').style.display = 'block';
                 }
             }
             
@@ -2628,10 +2646,11 @@
                 this.update();
                 this.draw();
                 
+                // Always check game over state and show buttons
                 if (this.gameOver) {
-                    // Just ensure buttons are shown
-                    this.showRestartButton();
-                    this.showShopButton();
+                    // Explicitly show buttons by directly manipulating DOM
+                    document.getElementById('restartBtn').style.display = 'block';
+                    document.getElementById('shopBtnInGame').style.display = 'block';
                 } else {
                     // Continue the game loop only if not game over
                     requestAnimationFrame(() => this.gameLoop());
@@ -2646,10 +2665,6 @@
                     localStorage.setItem('doodleJumpHighScore', this.highScore);
                 }
                 
-                // Show restart and shop buttons
-                this.showRestartButton();
-                this.showShopButton();
-                
                 // Hide touch zones when game is over
                 const leftTouch = document.getElementById('leftTouch');
                 const rightTouch = document.getElementById('rightTouch');
@@ -2659,11 +2674,15 @@
                 // Immediately redraw to show game over state
                 this.draw();
                 
-                // This forces external game loops to show UI
-                const restartBtn = document.getElementById('restartBtn');
-                const shopBtnInGame = document.getElementById('shopBtnInGame');
-                if (restartBtn) restartBtn.style.display = 'block';
-                if (shopBtnInGame) shopBtnInGame.style.display = 'block';
+                // Force UI to show - set direct DOM manipulation
+                document.getElementById('restartBtn').style.display = 'block';
+                document.getElementById('shopBtnInGame').style.display = 'block';
+                
+                // Timeout to ensure buttons are visible after any potential transitions
+                setTimeout(() => {
+                    document.getElementById('restartBtn').style.display = 'block';
+                    document.getElementById('shopBtnInGame').style.display = 'block';
+                }, 100);
             }
             
             // Reset the game state
@@ -2738,12 +2757,13 @@
                     game.update();
                     game.draw();
                     
-                    // Show restart and shop buttons if game is over
+                    // Explicitly check game over state here too
                     if (game.gameOver) {
                         restartBtn.style.display = 'block';
                         shopBtnInGame.style.display = 'block';
                     }
                     
+                    // Always continue the external loop
                     requestAnimationFrame(gameLoop);
                 }
             }
@@ -2761,6 +2781,11 @@
             // Restart game
             function handleRestartGame(e) {
                 if (e) e.preventDefault();
+                
+                // Hide UI buttons first
+                document.getElementById('restartBtn').style.display = 'none';
+                document.getElementById('shopBtnInGame').style.display = 'none';
+                
                 if (game) {
                     game.resetGame();
                     game.startGame();
