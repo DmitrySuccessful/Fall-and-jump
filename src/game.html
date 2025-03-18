@@ -2625,9 +2625,15 @@
 
             // Game loop method
             gameLoop() {
-                if (!this.gameOver) {
-                    this.update();
-                    this.draw();
+                this.update();
+                this.draw();
+                
+                if (this.gameOver) {
+                    // Just ensure buttons are shown
+                    this.showRestartButton();
+                    this.showShopButton();
+                } else {
+                    // Continue the game loop only if not game over
                     requestAnimationFrame(() => this.gameLoop());
                 }
             }
@@ -2649,6 +2655,15 @@
                 const rightTouch = document.getElementById('rightTouch');
                 if (leftTouch) leftTouch.style.display = 'none';
                 if (rightTouch) rightTouch.style.display = 'none';
+                
+                // Immediately redraw to show game over state
+                this.draw();
+                
+                // This forces external game loops to show UI
+                const restartBtn = document.getElementById('restartBtn');
+                const shopBtnInGame = document.getElementById('shopBtnInGame');
+                if (restartBtn) restartBtn.style.display = 'block';
+                if (shopBtnInGame) shopBtnInGame.style.display = 'block';
             }
             
             // Reset the game state
@@ -2722,6 +2737,13 @@
                 if (game) {
                     game.update();
                     game.draw();
+                    
+                    // Show restart and shop buttons if game is over
+                    if (game.gameOver) {
+                        restartBtn.style.display = 'block';
+                        shopBtnInGame.style.display = 'block';
+                    }
+                    
                     requestAnimationFrame(gameLoop);
                 }
             }
